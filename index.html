@@ -743,7 +743,7 @@
     <div class="form-group">
       <label>口座名義（カタカナ）<span class="req">必須</span></label>
       <input type="text" id="account_holder" placeholder="例：ヤマダ タロウ">
-      <div class="error-msg">口座名義をご入力ください</div>
+      <div class="error-msg">カタカナでご入力ください</div>
     </div>
 
     <div class="form-group">
@@ -995,6 +995,18 @@
       valid = false;
     }
 
+    // カタカナチェック（全角カタカナ・スペース・中点のみ許可）
+    const kanaRegex = /^[ァ-ヶー　\s・]+$/;
+    const kanaFields = ['name_kana', 'account_holder'];
+    kanaFields.forEach(id => {
+      const input = document.getElementById(id);
+      const val = input.value.trim();
+      if (val && !kanaRegex.test(val)) {
+        input.closest('.form-group').classList.add('error');
+        valid = false;
+      }
+    });
+
     // File check
     if (!fileInput.files.length) {
       fileInput.closest('.form-group').classList.add('error');
@@ -1037,16 +1049,19 @@
       try {
         const res = await fetch(GAS_URL, {
           method: 'POST',
+          mode: 'no-cors',
+          redirect: 'follow',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8',
+          },
           body: JSON.stringify(payload),
         });
-        const result = await res.json();
 
-        if (result.status === 'ok') {
-          submitBtn.classList.remove('loading');
-          document.getElementById('successOverlay').classList.add('active');
-        } else {
-          throw new Error(result.message || '送信に失敗しました');
-        }
+        // no-cors ではレスポンス内容を読めないため、
+        // エラーが出なければ成功とみなす
+        submitBtn.classList.remove('loading');
+        document.getElementById('successOverlay').classList.add('active');
+
       } catch (err) {
         submitBtn.classList.remove('loading');
         alert('送信エラー: ' + err.message + '\n\nしばらくしてから再度お試しください。');
