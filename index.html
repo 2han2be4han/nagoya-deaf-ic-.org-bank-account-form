@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>口座情報登録フォーム</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #2D6A4F;
+    --primary-light: #40916C;
+    --primary-pale: #B7E4C7;
+    --primary-ghost: #D8F3DC;
+    --accent: #E8985E;
+    --accent-light: #F2C094;
+    --bg: #FAFAF7;
+    --surface: #FFFFFF;
+    --text: #1B4332;
+    --text-light: #52796F;
+    --text-muted: #95A8A0;
+    --border: #D4DDD8;
+    --error: #D64545;
+    --radius: 16px;
+    --shadow-sm: 0 1px 3px rgba(45,106,79,0.06);
+    --shadow-md: 0 8px 30px rgba(45,106,79,0.08);
+    --shadow-lg: 0 20px 60px rgba(45,106,79,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  /* ─── Background Pattern ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(183,228,199,0.4) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(232,152,94,0.15) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── Hero Header ─── */
+  .hero {
+    position: relative;
+    padding: 48px 24px 36px;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -40px;
+    width: 200px; height: 200px;
+    background: var(--primary-pale);
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: -20px;
+    width: 120px; height: 120px;
+    background: var(--accent-light);
+    border-radius: 50%;
+    opacity: 0.25;
+    animation: float 6s ease-in-out infinite reverse;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-15px) scale(1.05); }
+  }
+
+  .hero-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border-radius: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 8px 24px rgba(45,106,79,0.2);
+    animation: fadeSlideDown 0.6s ease-out;
+  }
+
+  .hero-icon svg {
+    width: 36px; height: 36px;
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .hero .org-name {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--primary);
+    position: relative;
+    z-index: 1;
+    margin-bottom: 6px;
+    letter-spacing: 0.08em;
+    animation: fadeSlideDown 0.6s ease-out 0.05s both;
+  }
+
+  .hero h1 {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 900;
+    font-size: 1.6rem;
+    color: var(--text);
+    position: relative;
+    z-index: 1;
+    letter-spacing: -0.02em;
+    animation: fadeSlideDown 0.6s ease-out 0.1s both;
+  }
+
+  .hero .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-top: 8px;
+    position: relative;
+    z-index: 1;
+    font-weight: 300;
+    animation: fadeSlideDown 0.6s ease-out 0.2s both;
+  }
+
+  @keyframes fadeSlideDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── Notice Banner ─── */
+  .notice {
+    max-width: 520px;
+    margin: 0 auto 8px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, var(--primary-ghost), rgba(183,228,199,0.3));
+    border-left: 3px solid var(--primary);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 0.78rem;
+    color: var(--text-light);
+    line-height: 1.8;
+    animation: fadeSlideDown 0.6s ease-out 0.3s both;
+  }
+
+  .notice svg {
+    display: inline-block;
+    vertical-align: -3px;
+    margin-right: 4px;
+    width: 16px; height: 16px;
+    stroke: var(--primary);
+    fill: none;
+    stroke-width: 2;
+  }
+
+  /* ─── Form Container ─── */
+  .form-container {
+    position: relative;
+    z-index: 1;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+    animation: fadeSlideDown 0.6s ease-out 0.35s both;
+  }
+
+  .form-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(45,106,79,0.06);
+  }
+
+  /* ─── Section Dividers ─── */
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--primary);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary-ghost);
+  }
+
+  .section-title .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    background: var(--primary);
+    color: white;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+    margin: 28px 0;
+  }
+
+  /* ─── Form Groups ─── */
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .form-group label .req {
+    display: inline-block;
+    background: var(--error);
+    color: white;
+    font-size: 0.65rem;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+    font-weight: 700;
+    vertical-align: 2px;
+    letter-spacing: 0.05em;
+  }
+
+  .form-group .hint {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  /* ─── Inputs ─── */
+  input[type="text"],
+  input[type="tel"],
+  select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: 'Noto Sans JP', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    transition: all 0.25s ease;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(64,145,108,0.12);
+    background: white;
+  }
+
+  input::placeholder {
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2395A8A0' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+  }
+
+  /* ─── Radio Group (区分) ─── */
+  .radio-group {
+    display: flex;
+    gap: 10px;
+  }
+
+  .radio-group label {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-light);
+    background: var(--bg);
+    transition: all 0.25s ease;
+  }
+
+  .radio-group input[type="radio"] {
+    display: none;
+  }
+
+  .radio-group input[type="radio"]:checked + label {
+    border-color: var(--primary);
+    background: var(--primary-ghost);
+    color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(64,145,108,0.1);
+  }
+
+  /* ─── Inline Fields ─── */
+  .inline-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* ─── File Upload ─── */
+  .file-upload-area {
+    position: relative;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  .file-upload-area:hover,
+  .file-upload-area.dragover {
+    border-color: var(--primary-light);
+    background: var(--primary-ghost);
+  }
+
+  .file-upload-area input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .file-upload-area .upload-icon {
+    width: 44px; height: 44px;
+    margin: 0 auto 12px;
+    background: var(--primary-pale);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .file-upload-area .upload-icon svg {
+    width: 22px; height: 22px;
+    stroke: var(--primary);
+    fill: none;
+    stroke-width: 2;
+  }
+
+  .file-upload-area .upload-text {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    font-weight: 500;
+  }
+
+  .file-upload-area .upload-hint {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .file-preview {
+    display: none;
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--primary-ghost);
+    border-radius: 12px;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .file-preview.active {
+    display: flex;
+  }
+
+  .file-preview img {
+    width: 56px; height: 56px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid white;
+  }
+
+  .file-preview .file-info {
+    flex: 1;
+    text-align: left;
+  }
+
+  .file-preview .file-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text);
+    word-break: break-all;
+  }
+
+  .file-preview .file-size {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+
+  .file-preview .remove-file {
+    width: 28px; height: 28px;
+    border: none;
+    background: rgba(214,69,69,0.1);
+    color: var(--error);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: background 0.2s;
+  }
+
+  .file-preview .remove-file:hover {
+    background: rgba(214,69,69,0.2);
+  }
+
+  /* ─── Submit Button ─── */
+  .submit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 16px;
+    margin-top: 28px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(45,106,79,0.25);
+    letter-spacing: 0.05em;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(45,106,79,0.35);
+  }
+
+  .submit-btn:active {
+    transform: translateY(0);
+  }
+
+  .submit-btn svg {
+    width: 20px; height: 20px;
+    stroke: white;
+    fill: none;
+    stroke-width: 2;
+  }
+
+  /* ─── Footer ─── */
+  .footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+
+  /* ─── Success Overlay ─── */
+  .success-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(27,67,50,0.6);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .success-overlay.active {
+    display: flex;
+  }
+
+  .success-card {
+    background: white;
+    border-radius: 24px;
+    padding: 48px 36px;
+    text-align: center;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+    animation: popIn 0.4s ease-out;
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .success-card .check-circle {
+    width: 72px; height: 72px;
+    background: var(--primary-ghost);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+  }
+
+  .success-card .check-circle svg {
+    width: 36px; height: 36px;
+    stroke: var(--primary);
+    fill: none;
+    stroke-width: 2.5;
+  }
+
+  .success-card h2 {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .success-card p {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    line-height: 1.7;
+  }
+
+  /* ─── Validation ─── */
+  .form-group.error input,
+  .form-group.error select {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(214,69,69,0.1);
+  }
+
+  .error-msg {
+    display: none;
+    font-size: 0.72rem;
+    color: var(--error);
+    margin-top: 4px;
+  }
+
+  .form-group.error .error-msg {
+    display: block;
+  }
+
+  /* ─── Loading State ─── */
+  .submit-btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .spinner {
+    display: none;
+    width: 20px; height: 20px;
+    border: 2.5px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  .submit-btn.loading .spinner { display: block; }
+  .submit-btn.loading .btn-text { display: none; }
+  .submit-btn.loading svg { display: none; }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 400px) {
+    .form-card { padding: 24px 20px; }
+    .hero h1 { font-size: 1.4rem; }
+    .inline-fields { grid-template-columns: 1fr; }
+    .radio-group { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-icon">
+    <svg viewBox="0 0 24 24">
+      <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"/>
+      <path d="M3 21h18"/>
+      <path d="M9 7h1"/>
+      <path d="M9 11h1"/>
+      <path d="M14 7h1"/>
+      <path d="M14 11h1"/>
+      <path d="M9 15h6v6H9z"/>
+    </svg>
+  </div>
+  <p class="org-name">認定NPO法人 名古屋ろう国際センター</p>
+  <h1>口座情報登録フォーム</h1>
+  <p class="subtitle">ゆうちょ銀行の口座情報をご登録ください</p>
+</div>
+
+<!-- Notice -->
+<div class="notice">
+  <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+  ご入力いただいた情報は、給与振込・経費精算等の目的にのみ使用いたします。通帳の写真は口座情報の確認のためにお願いしております。
+</div>
+
+<!-- Form -->
+<div class="form-container">
+  <div class="form-card">
+
+    <!-- Section 1: 基本情報 -->
+    <div class="section-title"><span class="num">1</span>ご本人情報</div>
+
+    <div class="form-group">
+      <label>お名前（漢字）<span class="req">必須</span></label>
+      <input type="text" id="name_kanji" placeholder="例：山田 太郎">
+      <div class="error-msg">お名前をご入力ください</div>
+    </div>
+
+    <div class="form-group">
+      <label>お名前（カタカナ）<span class="req">必須</span></label>
+      <input type="text" id="name_kana" placeholder="例：ヤマダ タロウ">
+      <div class="error-msg">カタカナでご入力ください</div>
+    </div>
+
+    <div class="form-group">
+      <label>区分<span class="req">必須</span></label>
+      <div class="radio-group">
+        <input type="radio" name="category" id="cat_employee" value="従業員">
+        <label for="cat_employee">👤 従業員様</label>
+        <input type="radio" name="category" id="cat_parent" value="保護者">
+        <label for="cat_parent">👨‍👩‍👧 保護者様</label>
+      </div>
+      <div class="error-msg">区分を選択してください</div>
+    </div>
+
+    <div class="form-group">
+      <label>電話番号</label>
+      <input type="tel" id="phone" placeholder="例：090-1234-5678">
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 2: 口座情報 -->
+    <div class="section-title"><span class="num">2</span>ゆうちょ銀行 口座情報</div>
+
+    <div class="inline-fields">
+      <div class="form-group">
+        <label>記号（5桁）<span class="req">必須</span></label>
+        <input type="text" id="symbol" placeholder="例：10000" maxlength="5" inputmode="numeric">
+        <div class="error-msg">記号をご入力ください</div>
+      </div>
+      <div class="form-group">
+        <label>番号（8桁以内）<span class="req">必須</span></label>
+        <input type="text" id="number" placeholder="例：12345678" maxlength="8" inputmode="numeric">
+        <div class="error-msg">番号をご入力ください</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>支店名<span class="req">必須</span></label>
+      <input type="text" id="branch_name" placeholder="例：〇〇八 店">
+      <div class="error-msg">支店名をご入力ください</div>
+    </div>
+
+    <div class="inline-fields">
+      <div class="form-group">
+        <label>支店コード（3桁）<span class="req">必須</span></label>
+        <input type="text" id="branch_code" placeholder="例：008" maxlength="3" inputmode="numeric">
+        <div class="error-msg">支店コードをご入力ください</div>
+      </div>
+      <div class="form-group">
+        <label>口座番号<span class="req">必須</span></label>
+        <input type="text" id="account_number" placeholder="例：1234567" maxlength="7" inputmode="numeric">
+        <div class="error-msg">口座番号をご入力ください</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>口座名義（カタカナ）<span class="req">必須</span></label>
+      <input type="text" id="account_holder" placeholder="例：ヤマダ タロウ">
+      <div class="error-msg">口座名義をご入力ください</div>
+    </div>
+
+    <div class="form-group">
+      <p class="hint" style="margin-bottom:0; color:var(--text-light); font-size:0.75rem; background:var(--primary-ghost); padding:10px 14px; border-radius:10px;">
+        💡 記号・番号はゆうちょ銀行固有の番号です。通帳の表紙裏面をご確認ください。支店名・支店コード・口座番号は、他行からの振込に必要な情報です。
+      </p>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 3: 通帳写真 -->
+    <div class="section-title"><span class="num">3</span>通帳の写真</div>
+
+    <div class="form-group">
+      <label>通帳の見開き写真<span class="req">必須</span></label>
+      <div class="file-upload-area" id="uploadArea">
+        <input type="file" id="passbook_photo" accept="image/*" capture="environment">
+        <div class="upload-icon">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <div class="upload-text">タップして写真を選択</div>
+        <div class="upload-hint">またはここにドラッグ＆ドロップ</div>
+      </div>
+      <div class="file-preview" id="filePreview">
+        <img id="previewImg" src="" alt="preview">
+        <div class="file-info">
+          <div class="file-name" id="fileName"></div>
+          <div class="file-size" id="fileSize"></div>
+        </div>
+        <button type="button" class="remove-file" id="removeFile">✕</button>
+      </div>
+      <div class="error-msg">通帳の写真をアップロードしてください</div>
+      <p class="hint">口座名義・記号・番号が確認できる見開きページを撮影してください</p>
+    </div>
+
+    <!-- Submit -->
+    <button class="submit-btn" id="submitBtn" type="button">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+      <span class="btn-text">送信する</span>
+      <div class="spinner"></div>
+    </button>
+
+  </div>
+</div>
+
+<!-- Success Overlay -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-card">
+    <div class="check-circle">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    <h2>送信完了しました</h2>
+    <p>口座情報のご登録ありがとうございます。<br>内容を確認のうえ、ご連絡いたします。</p>
+  </div>
+</div>
+
+<div class="footer">© 2026 口座情報登録フォーム</div>
+
+<script>
+  // ─── File Upload Preview ───
+  const fileInput = document.getElementById('passbook_photo');
+  const uploadArea = document.getElementById('uploadArea');
+  const filePreview = document.getElementById('filePreview');
+  const previewImg = document.getElementById('previewImg');
+  const fileName = document.getElementById('fileName');
+  const fileSize = document.getElementById('fileSize');
+  const removeFile = document.getElementById('removeFile');
+
+  fileInput.addEventListener('change', handleFile);
+
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+  });
+
+  uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+  });
+
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    if (e.dataTransfer.files.length) {
+      fileInput.files = e.dataTransfer.files;
+      handleFile();
+    }
+  });
+
+  function handleFile() {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewImg.src = e.target.result;
+      fileName.textContent = file.name;
+      fileSize.textContent = (file.size / 1024).toFixed(1) + ' KB';
+      filePreview.classList.add('active');
+      uploadArea.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  removeFile.addEventListener('click', () => {
+    fileInput.value = '';
+    filePreview.classList.remove('active');
+    uploadArea.style.display = 'block';
+  });
+
+  // ─── Validation & Submit ───
+  const submitBtn = document.getElementById('submitBtn');
+
+  submitBtn.addEventListener('click', () => {
+    let valid = true;
+
+    // Clear previous errors
+    document.querySelectorAll('.form-group.error').forEach(g => g.classList.remove('error'));
+
+    // Required text fields
+    const requiredFields = [
+      'name_kanji', 'name_kana', 'symbol', 'number',
+      'branch_name', 'branch_code', 'account_number', 'account_holder'
+    ];
+
+    requiredFields.forEach(id => {
+      const input = document.getElementById(id);
+      if (!input.value.trim()) {
+        input.closest('.form-group').classList.add('error');
+        valid = false;
+      }
+    });
+
+    // Radio check
+    const catChecked = document.querySelector('input[name="category"]:checked');
+    if (!catChecked) {
+      document.querySelector('.radio-group').closest('.form-group').classList.add('error');
+      valid = false;
+    }
+
+    // File check
+    if (!fileInput.files.length) {
+      fileInput.closest('.form-group').classList.add('error');
+      valid = false;
+    }
+
+    if (!valid) {
+      const firstError = document.querySelector('.form-group.error');
+      if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    // ─── 実際の送信処理 ───
+    submitBtn.classList.add('loading');
+
+    // ★★★ ここにデプロイしたGAS WebアプリのURLを貼り付け ★★★
+    const GAS_URL = 'YOUR_GAS_WEBAPP_URL_HERE';
+
+    // 画像をBase64に変換して送信
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const base64Data = e.target.result; // "data:image/xxx;base64,..." 形式
+
+      const payload = {
+        category:       catChecked.value,
+        name_kanji:     document.getElementById('name_kanji').value.trim(),
+        name_kana:      document.getElementById('name_kana').value.trim(),
+        phone:          document.getElementById('phone').value.trim(),
+        symbol:         document.getElementById('symbol').value.trim(),
+        number:         document.getElementById('number').value.trim(),
+        branch_name:    document.getElementById('branch_name').value.trim(),
+        branch_code:    document.getElementById('branch_code').value.trim(),
+        account_number: document.getElementById('account_number').value.trim(),
+        account_holder: document.getElementById('account_holder').value.trim(),
+        photo_base64:   base64Data,
+        photo_filename: file.name
+      };
+
+      try {
+        const res = await fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        });
+        const result = await res.json();
+
+        if (result.status === 'ok') {
+          submitBtn.classList.remove('loading');
+          document.getElementById('successOverlay').classList.add('active');
+        } else {
+          throw new Error(result.message || '送信に失敗しました');
+        }
+      } catch (err) {
+        submitBtn.classList.remove('loading');
+        alert('送信エラー: ' + err.message + '\n\nしばらくしてから再度お試しください。');
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Remove error on input
+  document.querySelectorAll('input, select').forEach(el => {
+    el.addEventListener('input', () => {
+      el.closest('.form-group')?.classList.remove('error');
+    });
+  });
+
+  document.querySelectorAll('input[name="category"]').forEach(r => {
+    r.addEventListener('change', () => {
+      r.closest('.form-group')?.classList.remove('error');
+    });
+  });
+</script>
+</body>
+</html>
