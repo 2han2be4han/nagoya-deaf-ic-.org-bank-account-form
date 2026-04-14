@@ -110,7 +110,7 @@
   .hero .org-name {
     font-family: 'Zen Maru Gothic', sans-serif;
     font-weight: 700;
-    font-size: 0.82rem;
+    font-size: 1.15rem;
     color: var(--primary);
     position: relative;
     z-index: 1;
@@ -698,9 +698,39 @@
       <div class="error-msg">区分を選択してください</div>
     </div>
 
+    <div class="form-group" id="employee_branch_group" style="display: none;">
+      <label>所属（従業員様用）<span class="req">必須</span></label>
+      <select id="employee_branch">
+        <option value="" disabled selected>選択してください</option>
+        <option value="パレット">パレット</option>
+        <option value="パステル">パステル</option>
+        <option value="パズル">パズル</option>
+      </select>
+      <div class="error-msg">所属を選択してください</div>
+    </div>
+
     <div class="form-group">
       <label>電話番号</label>
       <input type="tel" id="phone" placeholder="例：090-1234-5678">
+    </div>
+
+    <div class="inline-fields">
+      <div class="form-group">
+        <label>郵便番号<span class="req">必須</span></label>
+        <input type="text" id="postal_code" placeholder="例：123-4567" inputmode="numeric">
+        <div class="error-msg">郵便番号をご入力ください</div>
+      </div>
+      <div></div>
+    </div>
+    <div class="form-group">
+      <label>ご住所<span class="req">必須</span></label>
+      <input type="text" id="address" placeholder="例：愛知県名古屋市〇〇区">
+      <div class="error-msg">ご住所をご入力ください</div>
+    </div>
+    <div class="form-group">
+      <label>番地・建物名<span class="req">必須</span></label>
+      <input type="text" id="address_detail" placeholder="例：1-2-3 〇〇マンション 101号室">
+      <div class="error-msg">番地・建物名をご入力ください</div>
     </div>
 
     <div class="section-divider"></div>
@@ -722,25 +752,6 @@
     </div>
 
     <div class="form-group">
-      <label>支店名<span class="req">必須</span></label>
-      <input type="text" id="branch_name" placeholder="例：〇〇八 店">
-      <div class="error-msg">支店名をご入力ください</div>
-    </div>
-
-    <div class="inline-fields">
-      <div class="form-group">
-        <label>支店コード（3桁）<span class="req">必須</span></label>
-        <input type="text" id="branch_code" placeholder="例：008" maxlength="3" inputmode="numeric">
-        <div class="error-msg">支店コードをご入力ください</div>
-      </div>
-      <div class="form-group">
-        <label>口座番号<span class="req">必須</span></label>
-        <input type="text" id="account_number" placeholder="例：1234567" maxlength="7" inputmode="numeric">
-        <div class="error-msg">口座番号をご入力ください</div>
-      </div>
-    </div>
-
-    <div class="form-group">
       <label>口座名義（カタカナ）<span class="req">必須</span></label>
       <input type="text" id="account_holder" placeholder="例：ヤマダ タロウ">
       <div class="error-msg">カタカナでご入力ください</div>
@@ -748,7 +759,7 @@
 
     <div class="form-group">
       <p class="hint" style="margin-bottom:0; color:var(--text-light); font-size:0.75rem; background:var(--primary-ghost); padding:10px 14px; border-radius:10px;">
-        💡 記号・番号はゆうちょ銀行固有の番号です。通帳の表紙裏面をご確認ください。支店名・支店コード・口座番号は、他行からの振込に必要な情報です。
+        💡 記号・番号はゆうちょ銀行固有の番号です。通帳の表紙裏面をご確認ください。
       </p>
     </div>
 
@@ -763,98 +774,7 @@
       <div class="passbook-illustration">
         <!-- スマホカメラのフレーム風 -->
         <div style="position:relative;">
-          <svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
-            <!-- === 通帳全体（見開き） === -->
-            <defs>
-              <filter id="shadow1" x="-5%" y="-5%" width="110%" height="115%">
-                <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#1B4332" flood-opacity="0.1"/>
-              </filter>
-              <!-- 赤い点線の強調枠 -->
-              <filter id="glow" x="-10%" y="-10%" width="120%" height="120%">
-                <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#E63946" flood-opacity="0.4"/>
-              </filter>
-            </defs>
-
-            <!-- 通帳の本体 -->
-            <rect x="20" y="20" width="420" height="260" rx="6" fill="#FFFEF7" stroke="#C5D5CB" stroke-width="1.2" filter="url(#shadow1)"/>
-
-            <!-- 中央の折り目 -->
-            <line x1="230" y1="22" x2="230" y2="278" stroke="#D4DDD8" stroke-width="1.5" stroke-dasharray="3,4"/>
-            <rect x="228" y="20" width="4" height="260" fill="rgba(0,0,0,0.02)"/>
-
-            <!-- ======= 左ページ：表紙うら ======= -->
-            <!-- ヘッダー -->
-            <rect x="30" y="28" width="190" height="24" rx="3" fill="#2D6A4F"/>
-            <text x="125" y="44" text-anchor="middle" font-size="11" fill="white" font-weight="bold" font-family="sans-serif">総合口座通帳（表紙うら）</text>
-
-            <!-- 通帳情報ブロック -->
-            <rect x="36" y="62" width="178" height="28" rx="3" fill="#F0F7F2" stroke="#B7E4C7" stroke-width="0.8"/>
-            <text x="46" y="73" font-size="8.5" fill="#52796F" font-family="sans-serif">お名前</text>
-            <text x="46" y="84" font-size="12" fill="#1B4332" font-weight="bold" font-family="sans-serif">ヤマダ　タロウ</text>
-
-            <!-- 記号 -->
-            <rect x="36" y="98" width="178" height="34" rx="3" fill="#FFF" stroke="#B7E4C7" stroke-width="0.8"/>
-            <text x="46" y="112" font-size="8" fill="#52796F" font-family="sans-serif">記号</text>
-            <text x="150" y="125" text-anchor="middle" font-size="18" fill="#1B4332" font-weight="bold" font-family="monospace" letter-spacing="4">10000</text>
-
-            <!-- 番号 -->
-            <rect x="36" y="140" width="178" height="34" rx="3" fill="#FFF" stroke="#B7E4C7" stroke-width="0.8"/>
-            <text x="46" y="154" font-size="8" fill="#52796F" font-family="sans-serif">番号</text>
-            <text x="150" y="167" text-anchor="middle" font-size="18" fill="#1B4332" font-weight="bold" font-family="monospace" letter-spacing="3">12345678</text>
-
-            <!-- お届け印 -->
-            <circle cx="185" cy="220" r="18" fill="none" stroke="#D64545" stroke-width="1.5" opacity="0.4"/>
-            <text x="185" y="217" text-anchor="middle" font-size="7" fill="#D64545" opacity="0.5" font-family="sans-serif">お届け</text>
-            <text x="185" y="228" text-anchor="middle" font-size="7" fill="#D64545" opacity="0.5" font-family="sans-serif">印</text>
-
-            <!-- 左下の注意書き -->
-            <text x="42" y="195" font-size="6.5" fill="#95A8A0" font-family="sans-serif">この通帳は再発行の際に必要です。</text>
-            <text x="42" y="206" font-size="6.5" fill="#95A8A0" font-family="sans-serif">大切に保管してください。</text>
-
-
-            <!-- ======= 右ページ ======= -->
-            <rect x="240" y="28" width="190" height="24" rx="3" fill="#52796F"/>
-            <text x="335" y="44" text-anchor="middle" font-size="11" fill="white" font-weight="bold" font-family="sans-serif">お取引明細</text>
-
-            <!-- テーブルヘッダー -->
-            <rect x="246" y="58" width="178" height="18" fill="#F0F5F2"/>
-            <text x="260" y="70" font-size="7.5" fill="#52796F" font-family="sans-serif">日付</text>
-            <text x="298" y="70" font-size="7.5" fill="#52796F" font-family="sans-serif">摘要</text>
-            <text x="356" y="70" font-size="7.5" fill="#52796F" font-family="sans-serif">お預り</text>
-            <text x="400" y="70" font-size="7.5" fill="#52796F" font-family="sans-serif">残高</text>
-
-            <!-- 明細行 -->
-            <line x1="246" y1="80" x2="424" y2="80" stroke="#E0E8E3" stroke-width="0.5"/>
-            <text x="252" y="92" font-size="7.5" fill="#95A8A0" font-family="monospace">04/01</text>
-            <text x="298" y="92" font-size="7.5" fill="#95A8A0" font-family="sans-serif">給与</text>
-            <text x="370" y="92" font-size="7.5" fill="#95A8A0" font-family="monospace" text-anchor="end">200,000</text>
-            <text x="418" y="92" font-size="7.5" fill="#95A8A0" font-family="monospace" text-anchor="end">350,000</text>
-
-            <line x1="246" y1="98" x2="424" y2="98" stroke="#E0E8E3" stroke-width="0.5"/>
-            <text x="252" y="110" font-size="7.5" fill="#95A8A0" font-family="monospace">04/05</text>
-            <text x="298" y="110" font-size="7.5" fill="#95A8A0" font-family="sans-serif">電気料</text>
-            <text x="418" y="110" font-size="7.5" fill="#95A8A0" font-family="monospace" text-anchor="end">342,300</text>
-
-            <line x1="246" y1="116" x2="424" y2="116" stroke="#E0E8E3" stroke-width="0.5"/>
-            <line x1="246" y1="134" x2="424" y2="134" stroke="#E0E8E3" stroke-width="0.5"/>
-            <line x1="246" y1="152" x2="424" y2="152" stroke="#E0E8E3" stroke-width="0.5"/>
-
-            <!-- === 赤い強調枠（ここを撮影！） === -->
-            <rect x="28" y="56" width="194" height="124" rx="6" fill="none" stroke="#E63946" stroke-width="2.5" stroke-dasharray="6,3" filter="url(#glow)"/>
-
-            <!-- カメラアイコン＋ラベル -->
-            <rect x="55" y="240" width="120" height="26" rx="13" fill="#E63946"/>
-            <text x="115" y="257" text-anchor="middle" font-size="10" fill="white" font-weight="bold" font-family="sans-serif">📷 ここを撮影！</text>
-
-            <!-- 矢印（ラベルから枠へ） -->
-            <path d="M115 240 L115 185" stroke="#E63946" stroke-width="1.8" fill="none" marker-end="url(#arrowRed)"/>
-            <defs>
-              <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-                <polygon points="0 0, 8 3, 0 6" fill="#E63946"/>
-              </marker>
-            </defs>
-
-          </svg>
+          <img src="./ダウンロード.jpg" alt="通帳見本" style="width:66%; height:auto; display:block; margin:0 auto; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
         </div>
       </div>
       <p class="example-note">
@@ -976,8 +896,8 @@
 
     // Required text fields
     const requiredFields = [
-      'name_kanji', 'name_kana', 'symbol', 'number',
-      'branch_name', 'branch_code', 'account_number', 'account_holder'
+      'name_kanji', 'name_kana', 'postal_code', 'address', 'address_detail',
+      'symbol', 'number', 'account_holder'
     ];
 
     requiredFields.forEach(id => {
@@ -993,6 +913,12 @@
     if (!catChecked) {
       document.querySelector('.radio-group').closest('.form-group').classList.add('error');
       valid = false;
+    } else if (catChecked.value === '従業員') {
+      const branchSel = document.getElementById('employee_branch');
+      if (!branchSel.value) {
+        branchSel.closest('.form-group').classList.add('error');
+        valid = false;
+      }
     }
 
     // カタカナチェック（全角カタカナ・スペース・中点のみ許可）
@@ -1033,14 +959,15 @@
 
       const payload = {
         category:       catChecked.value,
+        employee_branch: document.getElementById('employee_branch') ? document.getElementById('employee_branch').value : '',
         name_kanji:     document.getElementById('name_kanji').value.trim(),
         name_kana:      document.getElementById('name_kana').value.trim(),
+        postal_code:    document.getElementById('postal_code').value.trim(),
+        address:        document.getElementById('address').value.trim(),
+        address_detail: document.getElementById('address_detail').value.trim(),
         phone:          document.getElementById('phone').value.trim(),
         symbol:         document.getElementById('symbol').value.trim(),
         number:         document.getElementById('number').value.trim(),
-        branch_name:    document.getElementById('branch_name').value.trim(),
-        branch_code:    document.getElementById('branch_code').value.trim(),
-        account_number: document.getElementById('account_number').value.trim(),
         account_holder: document.getElementById('account_holder').value.trim(),
         photo_base64:   base64Data,
         photo_filename: file.name
@@ -1078,10 +1005,38 @@
   });
 
   document.querySelectorAll('input[name="category"]').forEach(r => {
-    r.addEventListener('change', () => {
+    r.addEventListener('change', (e) => {
       r.closest('.form-group')?.classList.remove('error');
+      
+      const employeeGroup = document.getElementById('employee_branch_group');
+      if (document.getElementById('cat_employee').checked) {
+        employeeGroup.style.display = 'block';
+      } else {
+        employeeGroup.style.display = 'none';
+        document.getElementById('employee_branch').value = '';
+        employeeGroup.classList.remove('error');
+      }
     });
   });
+
+  const postalInput = document.getElementById('postal_code');
+  if (postalInput) {
+    postalInput.addEventListener('input', async (e) => {
+      const zip = e.target.value.replace(/-/g, '');
+      if (zip.length === 7) {
+        try {
+          const res = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${zip}`);
+          const data = await res.json();
+          if (data.results) {
+            const result = data.results[0];
+            const addrInput = document.getElementById('address');
+            addrInput.value = `${result.address1}${result.address2}${result.address3}`;
+            addrInput.closest('.form-group').classList.remove('error');
+          }
+        } catch(err) {}
+      }
+    });
+  }
 </script>
 </body>
 </html>
