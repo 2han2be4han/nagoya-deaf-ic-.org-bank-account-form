@@ -40,10 +40,10 @@ function doPost(e) {
     // --- リクエストボディをパース ---
     const data = JSON.parse(e.postData.contents);
 
-    // --- 通帳写真をDriveに保存 ---
+    // --- 写真をDriveに保存 ---
     let photoUrl = '';
     if (data.photo_base64) {
-      photoUrl = savePhotoToDrive(data.photo_base64, data.photo_filename, data.name_kanji);
+      photoUrl = savePhotoToDrive(data.photo_base64, data.photo_filename, data.name_kanji, data.photo_method);
     }
 
     // --- スプレッドシートに書き込み ---
@@ -65,7 +65,8 @@ function doPost(e) {
         '記号',
         '番号',
         '口座名義（カタカナ）',
-        '通帳写真URL'
+        '提出方法',
+        '写真URL'
       ];
       sheet.appendRow(headers);
     }
@@ -75,7 +76,7 @@ function doPost(e) {
     const row = [
       timestamp,              // A: タイムスタンプ
       data.category,          // B: 区分
-      data.employee_branch,   // C: 所属
+      data.branch,            // C: 所属
       data.name_kanji,        // D: 氏名（漢字）
       data.name_kana,         // E: 氏名（カタカナ）
       data.postal_code,       // F: 郵便番号
@@ -85,7 +86,8 @@ function doPost(e) {
       data.symbol,            // J: 記号
       data.number,            // K: 番号
       data.account_holder,    // L: 口座名義（カタカナ）
-      photoUrl                // M: 通帳写真URL
+      data.photo_method || '',// M: 提出方法
+      photoUrl                // N: 写真URL
     ];
 
     sheet.appendRow(row);
@@ -106,7 +108,7 @@ function doPost(e) {
 // ============================================================
 //  savePhotoToDrive — Base64画像をGoogle Driveに保存
 // ============================================================
-function savePhotoToDrive(base64DataUrl, originalFilename, userName) {
+function savePhotoToDrive(base64DataUrl, originalFilename, userName, photoMethod) {
   // "data:image/jpeg;base64,/9j/4AAQ..." 形式から分離
   const parts     = base64DataUrl.split(',');
   const meta      = parts[0]; // "data:image/jpeg;base64"
@@ -130,7 +132,9 @@ function savePhotoToDrive(base64DataUrl, originalFilename, userName) {
   // ファイル名を生成（日時_名前_通帳）
   const timestamp = Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyyMMdd_HHmmss');
   const safeName  = (userName || 'unknown').replace(/[\/\\:*?"<>|]/g, '_');
-  const filename  = `${timestamp}_${safeName}_通帳${ext}`;
+  const methodLabels = { '通帳の写真': '通帳', 'カード番号の写真': 'カード', 'アプリスクショ': 'アプリスクショ' };
+  const methodLabel = methodLabels[photoMethod] || '通帳';
+  const filename  = `${timestamp}_${safeName}_${methodLabel}${ext}`;
 
   // Base64をBlobに変換
   const decoded = Utilities.base64Decode(raw);

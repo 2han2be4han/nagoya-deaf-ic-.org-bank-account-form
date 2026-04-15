@@ -323,6 +323,10 @@
     box-shadow: 0 0 0 3px rgba(64,145,108,0.1);
   }
 
+  .radio-group.vertical {
+    flex-direction: column;
+  }
+
   /* ─── Inline Fields ─── */
   .inline-fields {
     display: grid;
@@ -698,14 +702,16 @@
       <div class="error-msg">区分を選択してください</div>
     </div>
 
-    <div class="form-group" id="employee_branch_group" style="display: none;">
-      <label>所属（従業員様用）<span class="req">必須</span></label>
-      <select id="employee_branch">
-        <option value="" disabled selected>選択してください</option>
-        <option value="パレット">パレット</option>
-        <option value="パステル">パステル</option>
-        <option value="パズル">パズル</option>
-      </select>
+    <div class="form-group" id="branch_group" style="display: none;">
+      <label>所属<span class="req">必須</span></label>
+      <div class="radio-group">
+        <input type="radio" name="branch" id="branch_palette" value="パレット">
+        <label for="branch_palette">パレット</label>
+        <input type="radio" name="branch" id="branch_pastel" value="パステル">
+        <label for="branch_pastel">パステル</label>
+        <input type="radio" name="branch" id="branch_puzzle" value="パズル">
+        <label for="branch_puzzle">パズル</label>
+      </div>
       <div class="error-msg">所属を選択してください</div>
     </div>
 
@@ -765,14 +771,26 @@
 
     <div class="section-divider"></div>
 
-    <!-- Section 3: 通帳写真 -->
-    <div class="section-title"><span class="num">3</span>通帳の写真</div>
+    <!-- Section 3: 口座確認書類 -->
+    <div class="section-title"><span class="num">3</span>口座確認書類の提出</div>
 
-    <!-- 通帳見本 -->
-    <div class="passbook-example">
+    <div class="form-group">
+      <label>提出方法を選択してください<span class="req">必須</span></label>
+      <div class="radio-group vertical">
+        <input type="radio" name="photo_method" id="method_passbook" value="通帳の写真">
+        <label for="method_passbook">📒 通帳の写真</label>
+        <input type="radio" name="photo_method" id="method_card" value="カード番号の写真">
+        <label for="method_card">💳 キャッシュカード番号の写真</label>
+        <input type="radio" name="photo_method" id="method_app" value="アプリスクショ">
+        <label for="method_app">📱 ゆうちょアプリの口座情報スクリーンショット</label>
+      </div>
+      <div class="error-msg">提出方法を選択してください</div>
+    </div>
+
+    <!-- 通帳見本（通帳の写真 選択時のみ表示） -->
+    <div class="passbook-example" id="passbookExample" style="display: none;">
       <div class="example-label">📷 この部分を撮影してください</div>
       <div class="passbook-illustration">
-        <!-- スマホカメラのフレーム風 -->
         <div style="position:relative;">
           <img src="./ダウンロード.jpg" alt="通帳見本" style="width:66%; height:auto; display:block; margin:0 auto; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
         </div>
@@ -783,8 +801,8 @@
       </p>
     </div>
 
-    <div class="form-group">
-      <label>通帳の見開き写真<span class="req">必須</span></label>
+    <div class="form-group" id="photoUploadGroup" style="display: none;">
+      <label id="uploadLabel">写真をアップロード<span class="req">必須</span></label>
       <div class="file-upload-area" id="uploadArea">
         <input type="file" id="passbook_photo" accept="image/*" capture="environment">
         <div class="upload-icon">
@@ -805,9 +823,10 @@
         </div>
         <button type="button" class="remove-file" id="removeFile">✕</button>
       </div>
-      <div class="error-msg">通帳の写真をアップロードしてください</div>
-      <p class="hint">口座名義・記号・番号が確認できる見開きページを撮影してください</p>
+      <div class="error-msg">写真をアップロードしてください</div>
+      <p class="hint" id="uploadHint">口座名義・記号・番号が確認できる見開きページを撮影してください</p>
     </div>
+
 
     <!-- Submit -->
     <button class="submit-btn" id="submitBtn" type="button">
@@ -913,12 +932,20 @@
     if (!catChecked) {
       document.querySelector('.radio-group').closest('.form-group').classList.add('error');
       valid = false;
-    } else if (catChecked.value === '従業員') {
-      const branchSel = document.getElementById('employee_branch');
-      if (!branchSel.value) {
-        branchSel.closest('.form-group').classList.add('error');
+    } else {
+      // 従業員・保護者ともに所属を必須チェック
+      const branchChecked = document.querySelector('input[name="branch"]:checked');
+      if (!branchChecked) {
+        document.getElementById('branch_group').classList.add('error');
         valid = false;
       }
+    }
+
+    // 提出方法チェック
+    const photoMethodChecked = document.querySelector('input[name="photo_method"]:checked');
+    if (!photoMethodChecked) {
+      document.querySelector('input[name="photo_method"]').closest('.form-group').classList.add('error');
+      valid = false;
     }
 
     // カタカナチェック（全角カタカナ・スペース・中点のみ許可）
@@ -933,9 +960,9 @@
       }
     });
 
-    // File check
-    if (!fileInput.files.length) {
-      fileInput.closest('.form-group').classList.add('error');
+    // File check（提出方法が選択されている場合のみ）
+    if (photoMethodChecked && !fileInput.files.length) {
+      document.getElementById('photoUploadGroup').classList.add('error');
       valid = false;
     }
 
@@ -951,15 +978,14 @@
     // ★★★ ここにデプロイしたGAS WebアプリのURLを貼り付け ★★★
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbz33ZHP85O-lIHS53CEUN15me0gVGx0a9QRDZWdn4BhJpcHsLaEL5Z1jqljC9wAZ6j0/exec';
 
-    // 画像をBase64に変換して送信
-    const file = fileInput.files[0];
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const base64Data = e.target.result; // "data:image/xxx;base64,..." 形式
+    const photoMethod = photoMethodChecked ? photoMethodChecked.value : '';
+    const branchValue = document.querySelector('input[name="branch"]:checked')?.value || '';
 
+    async function sendPayload(base64Data, photoFilename) {
       const payload = {
         category:       catChecked.value,
-        employee_branch: document.getElementById('employee_branch') ? document.getElementById('employee_branch').value : '',
+        branch:         branchValue,
+        photo_method:   photoMethod,
         name_kanji:     document.getElementById('name_kanji').value.trim(),
         name_kana:      document.getElementById('name_kana').value.trim(),
         postal_code:    document.getElementById('postal_code').value.trim(),
@@ -970,11 +996,11 @@
         number:         document.getElementById('number').value.trim(),
         account_holder: document.getElementById('account_holder').value.trim(),
         photo_base64:   base64Data,
-        photo_filename: file.name
+        photo_filename: photoFilename
       };
 
       try {
-        const res = await fetch(GAS_URL, {
+        await fetch(GAS_URL, {
           method: 'POST',
           mode: 'no-cors',
           redirect: 'follow',
@@ -984,17 +1010,22 @@
           body: JSON.stringify(payload),
         });
 
-        // no-cors ではレスポンス内容を読めないため、
-        // エラーが出なければ成功とみなす
         submitBtn.classList.remove('loading');
         document.getElementById('successOverlay').classList.add('active');
-
       } catch (err) {
         submitBtn.classList.remove('loading');
         alert('送信エラー: ' + err.message + '\n\nしばらくしてから再度お試しください。');
       }
-    };
-    reader.readAsDataURL(file);
+    }
+
+    if (fileInput.files.length) {
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => sendPayload(e.target.result, file.name);
+      reader.readAsDataURL(file);
+    } else {
+      sendPayload('', '');
+    }
   });
 
   // Remove error on input
@@ -1005,16 +1036,45 @@
   });
 
   document.querySelectorAll('input[name="category"]').forEach(r => {
-    r.addEventListener('change', (e) => {
+    r.addEventListener('change', () => {
       r.closest('.form-group')?.classList.remove('error');
-      
-      const employeeGroup = document.getElementById('employee_branch_group');
-      if (document.getElementById('cat_employee').checked) {
-        employeeGroup.style.display = 'block';
-      } else {
-        employeeGroup.style.display = 'none';
-        document.getElementById('employee_branch').value = '';
-        employeeGroup.classList.remove('error');
+      // 従業員でも保護者でも所属を選択
+      document.getElementById('branch_group').style.display = 'block';
+    });
+  });
+
+  // ─── Branch Radio Handler ───
+  document.querySelectorAll('input[name="branch"]').forEach(r => {
+    r.addEventListener('change', () => {
+      document.getElementById('branch_group').classList.remove('error');
+    });
+  });
+
+  // ─── Photo Method Handler ───
+  document.querySelectorAll('input[name="photo_method"]').forEach(r => {
+    r.addEventListener('change', () => {
+      r.closest('.form-group')?.classList.remove('error');
+      const method = document.querySelector('input[name="photo_method"]:checked').value;
+      const passbookExample = document.getElementById('passbookExample');
+      const photoUploadGroup = document.getElementById('photoUploadGroup');
+      const uploadLabel = document.getElementById('uploadLabel');
+      const uploadHint = document.getElementById('uploadHint');
+
+      photoUploadGroup.style.display = 'block';
+      photoUploadGroup.classList.remove('error');
+
+      if (method === '通帳の写真') {
+        passbookExample.style.display = 'block';
+        uploadLabel.innerHTML = '通帳の見開き写真<span class="req">必須</span>';
+        uploadHint.textContent = '口座名義・記号・番号が確認できる見開きページを撮影してください';
+      } else if (method === 'カード番号の写真') {
+        passbookExample.style.display = 'none';
+        uploadLabel.innerHTML = 'キャッシュカード番号部分の写真<span class="req">必須</span>';
+        uploadHint.textContent = 'キャッシュカードの番号が見える面を撮影してください';
+      } else if (method === 'アプリスクショ') {
+        passbookExample.style.display = 'none';
+        uploadLabel.innerHTML = 'ゆうちょアプリの口座情報スクリーンショット<span class="req">必須</span>';
+        uploadHint.textContent = 'ゆうちょ銀行アプリの「口座情報管理」画面をスクリーンショットしてください';
       }
     });
   });
