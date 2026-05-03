@@ -145,6 +145,48 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* ─── LINE In-App Browser Warning ─── */
+  .line-warning {
+    display: none;
+    max-width: 520px;
+    margin: 0 auto 12px;
+    padding: 14px 18px;
+    background: #FFF4E6;
+    border: 1.5px solid #F2C094;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    color: #8A4B1F;
+    line-height: 1.6;
+  }
+
+  .line-warning.active { display: block; }
+
+  .line-warning .warn-title {
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .line-warning .open-safari-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 10px 18px;
+    background: var(--primary);
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 8px rgba(45,106,79,0.2);
+  }
+
+  .line-warning .open-safari-btn:active { opacity: 0.85; }
+
   /* ─── Notice Banner ─── */
   .notice {
     max-width: 520px;
@@ -666,6 +708,13 @@
   <p class="subtitle">ゆうちょ銀行の口座情報をご登録ください</p>
 </div>
 
+<!-- LINE In-App Browser Warning (shown only when detected) -->
+<div class="line-warning" id="lineWarning">
+  <div class="warn-title">⚠️ LINEアプリ内で開いています</div>
+  写真の選択がうまく動かない場合があります。下のボタンから <strong>Safari</strong> で開き直してください。
+  <a href="#" class="open-safari-btn" id="openSafariBtn">🌐 Safariで開く</a>
+</div>
+
 <!-- Notice -->
 <div class="notice">
   <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
@@ -825,6 +874,9 @@
       </div>
       <div class="error-msg">写真をアップロードしてください</div>
       <p class="hint" id="uploadHint">口座名義・記号・番号が確認できる見開きページを撮影してください</p>
+      <p class="hint" id="linePermissionHint" style="display:none; margin-top:6px; color:#8A4B1F;">
+        💡 写真が選べない場合は「設定 → LINE → 写真 → すべての写真を許可」をご確認ください
+      </p>
     </div>
 
 
@@ -854,6 +906,22 @@
 <div class="footer">© 2026 口座情報登録フォーム</div>
 
 <script>
+  // ─── LINE In-App Browser Detection ───
+  (function() {
+    const isLine = /Line\//i.test(navigator.userAgent);
+    const url = new URL(window.location.href);
+    const alreadyExternal = url.searchParams.get('openExternalBrowser') === '1';
+    if (isLine && !alreadyExternal) {
+      const banner = document.getElementById('lineWarning');
+      const btn = document.getElementById('openSafariBtn');
+      url.searchParams.set('openExternalBrowser', '1');
+      btn.setAttribute('href', url.toString());
+      banner.classList.add('active');
+      const permHint = document.getElementById('linePermissionHint');
+      if (permHint) permHint.style.display = 'block';
+    }
+  })();
+
   // ─── File Upload Preview ───
   const fileInput = document.getElementById('passbook_photo');
   const uploadArea = document.getElementById('uploadArea');
@@ -1067,17 +1135,14 @@
         passbookExample.style.display = 'block';
         uploadLabel.innerHTML = '通帳の見開き写真<span class="req">必須</span>';
         uploadHint.textContent = '口座名義・記号・番号が確認できる見開きページを撮影してください';
-        fileInput.setAttribute('capture', 'environment');
       } else if (method === 'カード番号の写真') {
         passbookExample.style.display = 'none';
         uploadLabel.innerHTML = 'キャッシュカード番号部分の写真<span class="req">必須</span>';
         uploadHint.textContent = 'キャッシュカードの番号が見える面を撮影してください';
-        fileInput.setAttribute('capture', 'environment');
       } else if (method === 'アプリスクショ') {
         passbookExample.style.display = 'none';
         uploadLabel.innerHTML = 'ゆうちょアプリの口座情報スクリーンショット<span class="req">必須</span>';
         uploadHint.textContent = 'ゆうちょ銀行アプリの「口座情報管理」画面をスクリーンショットしてください';
-        fileInput.removeAttribute('capture');
       }
     });
   });
