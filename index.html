@@ -804,7 +804,7 @@
     <div class="form-group" id="photoUploadGroup" style="display: none;">
       <label id="uploadLabel">写真をアップロード<span class="req">必須</span></label>
       <div class="file-upload-area" id="uploadArea">
-        <input type="file" id="passbook_photo" accept="image/*" capture="environment">
+        <input type="file" id="passbook_photo" accept="image/*">
         <div class="upload-icon">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
@@ -1067,14 +1067,17 @@
         passbookExample.style.display = 'block';
         uploadLabel.innerHTML = '通帳の見開き写真<span class="req">必須</span>';
         uploadHint.textContent = '口座名義・記号・番号が確認できる見開きページを撮影してください';
+        fileInput.setAttribute('capture', 'environment');
       } else if (method === 'カード番号の写真') {
         passbookExample.style.display = 'none';
         uploadLabel.innerHTML = 'キャッシュカード番号部分の写真<span class="req">必須</span>';
         uploadHint.textContent = 'キャッシュカードの番号が見える面を撮影してください';
+        fileInput.setAttribute('capture', 'environment');
       } else if (method === 'アプリスクショ') {
         passbookExample.style.display = 'none';
         uploadLabel.innerHTML = 'ゆうちょアプリの口座情報スクリーンショット<span class="req">必須</span>';
         uploadHint.textContent = 'ゆうちょ銀行アプリの「口座情報管理」画面をスクリーンショットしてください';
+        fileInput.removeAttribute('capture');
       }
     });
   });
